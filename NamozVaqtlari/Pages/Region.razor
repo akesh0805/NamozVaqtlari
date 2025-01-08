@@ -1,0 +1,46 @@
+@page "/region"
+@using NamozVaqtlari.Data
+@using NamozVaqtlari.Services
+@inject PrayerService PrayerService
+@using MudBlazor
+
+
+@if (prayerTimes != null)
+{
+    <MudTable Items="prayerTimes.Keys">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Viloyatlar bo'yicha namoz vaqtlari</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="fas fa-mosque" Color="Color.Primary" />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Viloyat</MudTh>
+            <MudTh>Tong</MudTh>
+            <MudTh>Quyosh</MudTh>
+            <MudTh>Peshin</MudTh>
+            <MudTh>Asr</MudTh>
+            <MudTh>Shom</MudTh>
+            <MudTh>Xufton</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Viloyat">@context</MudTd>
+            <MudTd DataLabel="Tong">@prayerTimes[context]?.Data?.Timings?.Fajr</MudTd>
+            <MudTd DataLabel="Quyosh">@prayerTimes[context].Data?.Timings?.Sunrise</MudTd>
+            <MudTd DataLabel="Peshin">@prayerTimes[context].Data?.Timings?.Dhuhr</MudTd>
+            <MudTd DataLabel="Asr">@prayerTimes[context].Data?.Timings?.Asr</MudTd>
+            <MudTd DataLabel="Shom">@prayerTimes[context].Data?.Timings?.Maghrib</MudTd>
+            <MudTd DataLabel="Xufton">@prayerTimes[context].Data?.Timings?.Isha</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+
+@code {
+    
+    private Dictionary<string, PrayerResponse>? prayerTimes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        prayerTimes = await PrayerService.GetAllPrayerTimes();
+    }
+}

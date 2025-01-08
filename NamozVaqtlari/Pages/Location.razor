@@ -1,0 +1,96 @@
+@page "/"
+@using NamozVaqtlari.Data
+@using NamozVaqtlari.Services
+@inject NavigationManager NavigationManager
+@inject PrayerService PrayerService
+
+@if (prayerLocation != null)
+{
+    <MudGrid Justify="Justify.Center">
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">TONG</MudText>
+                @if (prayerLocation?.Data?.Timings?.Fajr != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Fajr;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">QUYOSH</MudText>
+                @if (prayerLocation?.Data?.Timings?.Sunrise != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Sunrise;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">PESHIN</MudText>
+                @if (prayerLocation?.Data?.Timings?.Dhuhr != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Dhuhr;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">ASR</MudText>
+                @if (prayerLocation?.Data?.Timings?.Asr != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Asr;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">SHOM</MudText>
+                @if (prayerLocation?.Data?.Timings?.Maghrib != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Maghrib;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h6">XUFTON</MudText>
+                @if (prayerLocation?.Data?.Timings?.Isha != null)
+                {
+                    var timeString = prayerLocation.Data.Timings.Isha;
+                    TimeSpan time;
+                    if (TimeSpan.TryParse(timeString, out time))
+                        _time = time;
+                }
+                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="true" Disabled="true" />
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <br>
+    <p>Yuklanmoqda...</p>
+}
+@code {
+    private TimeSpan? _time;
+    private PrayerResponse? prayerLocation;
+
+    private async Task RequestLocation()
+    {
+        prayerLocation = await PrayerService.RequestLocation();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RequestLocation();
+    }
+}
