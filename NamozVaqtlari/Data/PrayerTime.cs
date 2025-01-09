@@ -125,3 +125,17 @@ public class Offset
     public int Isha { get; set; }
     public int Midnight { get; set; }
 }
+
+public class LocationResponse
+{
+    public Address? Address { get; set; }
+}
+
+public class Address
+{
+    public string? City { get; set; }
+    public string? Town { get; set; }
+    public string? Village { get; set; }
+    public string? State { get; set; }
+    public string? Country { get; set; }
+}

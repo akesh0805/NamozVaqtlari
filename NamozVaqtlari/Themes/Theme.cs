@@ -19,7 +19,7 @@ public class Theme
     {
         Black = "#42313a", // Темный цвет
         AppbarText = "#6c2d2c", // Цвет текста в AppBar
-        AppbarBackground = "#9f4636", // Фон AppBar
+        AppbarBackground = "#186904", // Фон AppBar
         DrawerBackground = "#f1dcc9", // Фон Drawer
         GrayLight = "#f1dcc9", // Легкий серый (заменен на новый цвет)
         GrayLighter = "#f1dcc9", // Более светлый серый (заменен на новый цвет)

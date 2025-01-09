@@ -1,0 +1,13 @@
+<style>
+    .responsive-item {
+        /* Стандартные стили */
+    }
+
+    @media (max-width: 600px) {
+        .responsive-item {
+            /* Стили для мобильного просмотра */
+            width: 100%;
+            font-size: smaller;
+        }
+    }
+</style>

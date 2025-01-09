@@ -1,0 +1,114 @@
+@page "/"
+@using NamozVaqtlari.Data
+@using NamozVaqtlari.Services
+@inject PrayerService PrayerService
+
+    <MudTable Class="pa-2 ma-2" Hover="true" Breakpoint="Breakpoint.None" Items="prayerTimesList" Bordered="true">
+        <ToolBarContent>
+            <MudStack Spacing="1">
+                <MudText Color="Color.Primary">@currentDate</MudText>
+
+            </MudStack>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh Style="font-weight: bold;">Namozlar</MudTh>
+            <MudTh Style="font-weight: bold;">Vaqtlar</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd Style="padding:8px">@context.Name</MudTd>
+            <MudTd Style="padding:8px">@context.Time</MudTd>
+        </RowTemplate>
+        <FooterContent>
+            <MudText Color="Color.Primary" Typo="Typo.caption" Style="margin-left: 6px;">
+                Sizning manzilingiz:<br />
+                @foreach (var word in LocationName!.Split(", "))
+                {
+                    <MudText Typo="Typo.overline" Style="display:block; margin-left:6px;">@word</MudText>
+                }
+            </MudText>
+        </FooterContent>
+    </MudTable>
+
+@code {
+
+    private PrayerResponse? prayerLocation;
+    private string? LocationName;
+
+    private async Task RequestLocation()
+    {
+        prayerLocation = await PrayerService.RequestLocation();
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RequestLocation();
+        UpdateCurrentDate();
+
+        Timer timer = new Timer(state =>
+        {
+            InvokeAsync(() =>
+    {
+    UpdateCurrentDate();
+    StateHasChanged();
+            });
+        }, null, TimeSpan.Zero, TimeSpan.FromDays(1));
+
+        LocationName = await GetLocationName(prayerLocation?.Data?.Meta?.Latitude ?? 0, prayerLocation?.Data?.Meta?.Longitude ??
+        0);
+    }
+
+    private async Task<string?> GetLocationName(double latitude, double longitude)
+    {
+        string url = $"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}";
+
+        try
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetFromJsonAsync<LocationResponse>(url);
+
+            if (response?.Address != null)
+            {
+                var city = response.Address.City ?? response.Address.Town ?? response.Address.Village;
+                var state = response.Address.State;
+                var country = response.Address.Country;
+
+                return $"{city}, {state}, {country}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении местоположения: {ex.Message}");
+        }
+
+        return "Местоположение не определено";
+    }
+
+    private List<(string Name, string Time)> prayerTimesList => GetPrayerTimesList();
+
+    private List<(string Name, string Time)> GetPrayerTimesList()
+    {
+        if (prayerLocation?.Data?.Timings == null)
+            return new List<(string, string)>();
+
+        var prayerTimesList = new List<(string Name, string Time)>
+{
+("Tong", prayerLocation.Data.Timings.Fajr ),
+("Quyosh", prayerLocation.Data.Timings.Sunrise),
+("Peshin", prayerLocation.Data.Timings.Dhuhr),
+("Asr", prayerLocation.Data.Timings.Asr),
+("Shom", prayerLocation.Data.Timings.Maghrib),
+("Xufton", prayerLocation.Data.Timings.Isha)
+};
+
+        return prayerTimesList;
+
+
+    }
+    private string? currentDate;
+
+    private void UpdateCurrentDate()
+    {
+        currentDate = DateTimeOffset.Now.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("en-EN"));
+    }
+}

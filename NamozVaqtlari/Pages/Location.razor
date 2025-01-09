@@ -1,79 +1,114 @@
-@page "/"
+@page "/sadas"
 @using NamozVaqtlari.Data
 @using NamozVaqtlari.Services
-@inject NavigationManager NavigationManager
 @inject PrayerService PrayerService
+@inject NavigationManager NavigationManager
+
+<style>
+    .responsive-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Три колонки */
+        grid-template-rows: repeat(2, 1fr); /* Две строки */
+        gap: 8px; /* Разрыв между элементами */
+        width: 100%; /* Занять всю ширину экрана */
+        height: 100vh; /* Занять всю высоту экрана */
+        align-items: center; /* Выравнивание по центру */
+    }
+
+    .responsive-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem; /* Размер текста */
+        border-radius: 12px; /* Закругленные углы */
+        background-color: #f0f0f0; /* Цвет фона элемента */
+        padding: 8px; /* Внутренние отступы */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Легкая тень */
+    }
+
+    .responsive-item .mud-time-picker {
+        width: 80%; /* Адаптированная ширина таймпикера */
+        height: auto; /* Пропорциональная высота */
+    }
+
+    .responsive-item .mud-text {
+        font-size: 1rem; /* Размер текста внутри элемента */
+    }
+</style>
+
 
 @if (prayerLocation != null)
 {
-    <MudGrid Justify="Justify.Center">
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">TONG</MudText>
-                @if (prayerLocation?.Data?.Timings?.Fajr != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Fajr;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">QUYOSH</MudText>
-                @if (prayerLocation?.Data?.Timings?.Sunrise != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Sunrise;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">PESHIN</MudText>
-                @if (prayerLocation?.Data?.Timings?.Dhuhr != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Dhuhr;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">ASR</MudText>
-                @if (prayerLocation?.Data?.Timings?.Asr != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Asr;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">SHOM</MudText>
-                @if (prayerLocation?.Data?.Timings?.Maghrib != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Maghrib;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-        <MudItem>
-            <MudText Align="Align.Center" Typo="Typo.h6">XUFTON</MudText>
-                @if (prayerLocation?.Data?.Timings?.Isha != null)
-                {
-                    var timeString = prayerLocation.Data.Timings.Isha;
-                    TimeSpan time;
-                    if (TimeSpan.TryParse(timeString, out time))
-                        _time = time;
-                }
-                <MudTimePicker PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
-        </MudItem>
-    </MudGrid>
+<MudGrid Justify="Justify.Center" Class="responsive-grid">
+    <MudItem Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">TONG</MudText>
+        @if (prayerLocation?.Data?.Timings?.Fajr != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Fajr;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+    <MudItem Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">QUYOSH</MudText>
+        @if (prayerLocation?.Data?.Timings?.Sunrise != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Sunrise;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+    <MudItem Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">PESHIN</MudText>
+        @if (prayerLocation?.Data?.Timings?.Dhuhr != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Dhuhr;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+    <MudItem  Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">ASR</MudText>
+        @if (prayerLocation?.Data?.Timings?.Asr != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Asr;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+    <MudItem Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">SHOM</MudText>
+        @if (prayerLocation?.Data?.Timings?.Maghrib != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Maghrib;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+    <MudItem Class="responsive-item">
+        <MudText Class="responsive-item mud-text" Align="Align.Center" Typo="Typo.h6">XUFTON</MudText>
+        @if (prayerLocation?.Data?.Timings?.Isha != null)
+        {
+            var timeString = prayerLocation.Data.Timings.Isha;
+            TimeSpan time;
+            if (TimeSpan.TryParse(timeString, out time))
+                _time = time;
+        }
+        <MudTimePicker Class="responsive-item mud-time-picker" PickerVariant="PickerVariant.Static" @bind-Time="_time" AmPm="false" Disabled="true" />
+    </MudItem>
+</MudGrid>
+
 }
 else
 {

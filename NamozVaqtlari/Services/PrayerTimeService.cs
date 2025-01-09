@@ -55,10 +55,12 @@ public class PrayerService(
 
         foreach (var city in cities)
         {
-                var response = await GetPrayerTimes(city, "Uzbekistan");
-                if (response != null)
-                    prayerTimesForAll[city] = response;
+            var response = await GetPrayerTimes(city, "Uzbekistan");
+            if (response != null)
+                prayerTimesForAll[city] = response;
         }
         return prayerTimesForAll;
     }
+
+    
 }
