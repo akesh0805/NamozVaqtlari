@@ -21,10 +21,7 @@
         <FooterContent>
             <MudText Color="Color.Primary" Typo="Typo.caption" Style="margin-left: 6px;">
                 Sizning manzilingiz:<br />
-                @foreach (var word in LocationName!.Split(", "))
-                {
-                    <MudText Typo="Typo.overline" Style="display:block; margin-left:6px;">@word</MudText>
-                }
+                    @LocationName
             </MudText>
         </FooterContent>
     </MudTable>
@@ -73,7 +70,7 @@
                 var state = response.Address.State;
                 var country = response.Address.Country;
 
-                return $"{city}, {state}, {country}";
+                return $"{state}, {country}";
             }
         }
         catch (Exception ex)
@@ -93,12 +90,12 @@
 
         var prayerTimesList = new List<(string Name, string Time)>
 {
-("Tong", prayerLocation.Data.Timings.Fajr ),
-("Quyosh", prayerLocation.Data.Timings.Sunrise),
-("Peshin", prayerLocation.Data.Timings.Dhuhr),
-("Asr", prayerLocation.Data.Timings.Asr),
-("Shom", prayerLocation.Data.Timings.Maghrib),
-("Xufton", prayerLocation.Data.Timings.Isha)
+("Tong", prayerLocation.Data.Timings.Fajr ?? "N/A"),
+("Quyosh", prayerLocation.Data.Timings.Sunrise ?? "N/A"),
+("Peshin", prayerLocation.Data.Timings.Dhuhr ?? "N/A"),
+("Asr", prayerLocation.Data.Timings.Asr ?? "N/A"),
+("Shom", prayerLocation.Data.Timings.Maghrib ?? "N/A"),
+("Xufton", prayerLocation.Data.Timings.Isha ?? "N/A")
 };
 
         return prayerTimesList;
