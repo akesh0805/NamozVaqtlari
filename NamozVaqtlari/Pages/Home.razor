@@ -3,6 +3,36 @@
 @using NamozVaqtlari.Services
 @inject PrayerService PrayerService
 
+@if(isLocationDanied)
+{
+    <MudTable Class="pa-2 ma-2" Items="prayerTimes?.Keys"  Hover="true" Breakpoint="Breakpoint.None" Bordered="true">
+        <ToolBarContent>
+            <MudText style="font-weight: bold;" Typo="Typo.h6">Viloyatlar bo'yicha namoz vaqtlari</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="fas fa-mosque" Color="Color.Primary" />
+        </ToolBarContent>
+        <HeaderContent >
+            <MudTh style="font-weight: bold;">Viloyat</MudTh>
+            <MudTh style="font-weight: bold;">Tong</MudTh>
+            <MudTh style="font-weight: bold;">Quyosh</MudTh>
+            <MudTh style="font-weight: bold;">Peshin</MudTh>
+            <MudTh style="font-weight: bold;">Asr</MudTh>
+            <MudTh style="font-weight: bold;">Shom</MudTh>
+            <MudTh style="font-weight: bold;">Xufton</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Viloyat">@context</MudTd>
+            <MudTd DataLabel="Tong">@prayerTimes[context]?.Data?.Timings?.Fajr</MudTd>
+            <MudTd DataLabel="Quyosh">@prayerTimes[context].Data?.Timings?.Sunrise</MudTd>
+            <MudTd DataLabel="Peshin">@prayerTimes[context].Data?.Timings?.Dhuhr</MudTd>
+            <MudTd DataLabel="Asr">@prayerTimes[context].Data?.Timings?.Asr</MudTd>
+            <MudTd DataLabel="Shom">@prayerTimes[context].Data?.Timings?.Maghrib</MudTd>
+            <MudTd DataLabel="Xufton">@prayerTimes[context].Data?.Timings?.Isha</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
     <MudTable Class="pa-2 ma-2" Hover="true" Breakpoint="Breakpoint.None" Items="prayerTimesList" Bordered="true">
         <ToolBarContent>
             <MudStack Spacing="1">
@@ -21,20 +51,35 @@
         <FooterContent>
             <MudText Color="Color.Primary" Typo="Typo.caption" Style="margin-left: 6px;">
                 Sizning manzilingiz:<br />
-                    @LocationName
+                @LocationName
             </MudText>
         </FooterContent>
     </MudTable>
+}
+
 
 @code {
+    private bool isLocationDanied = false;
+    private string? errorMessage;
+    private Dictionary<string, PrayerResponse>? prayerTimes;
 
     private PrayerResponse? prayerLocation;
     private string? LocationName;
 
     private async Task RequestLocation()
     {
-        prayerLocation = await PrayerService.RequestLocation();
-
+        try
+        {
+            prayerLocation = await PrayerService.RequestLocation();
+            isLocationDanied = false;
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            isLocationDanied = true;
+            errorMessage = "Geolokatsiyaga ruxsat berilmadi. Barcha viloyatlar uchun namoz vaqtlari taqdim etilmoqda";
+            prayerTimes = await PrayerService.GetAllPrayerTimes();
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -49,36 +94,34 @@
     UpdateCurrentDate();
     StateHasChanged();
             });
-        }, null, TimeSpan.Zero, TimeSpan.FromDays(1));
+        },
+        null,
+        TimeSpan.Zero,
+        TimeSpan.FromDays(1));
 
-        LocationName = await GetLocationName(prayerLocation?.Data?.Meta?.Latitude ?? 0, prayerLocation?.Data?.Meta?.Longitude ??
-        0);
+        if (!isLocationDanied && prayerLocation != null)
+        {
+            LocationName = await GetLocationName(prayerLocation.Data.Meta.Latitude, prayerLocation.Data.Meta.Longitude);
+        }
     }
 
     private async Task<string?> GetLocationName(double latitude, double longitude)
     {
         string url = $"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}";
 
-        try
+
+        using var httpClient = new HttpClient();
+        var response = await httpClient.GetFromJsonAsync<LocationResponse>(url);
+
+        if (response?.Address != null)
         {
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetFromJsonAsync<LocationResponse>(url);
+            var city = response.Address.City ?? response.Address.Town ?? response.Address.Village;
+            var state = response.Address.State;
+            var country = response.Address.Country;
 
-            if (response?.Address != null)
-            {
-                var city = response.Address.City ?? response.Address.Town ?? response.Address.Village;
-                var state = response.Address.State;
-                var country = response.Address.Country;
-
-                return $"{state}, {country}";
-            }
+            return $"{state}, {country}";
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Ошибка при получении местоположения: {ex.Message}");
-        }
-
-        return "Местоположение не определено";
+        return "Joylashuv aniqlanmadi";
     }
 
     private List<(string Name, string Time)> prayerTimesList => GetPrayerTimesList();
